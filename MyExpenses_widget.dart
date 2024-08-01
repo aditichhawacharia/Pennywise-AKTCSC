@@ -1,38 +1,126 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
-import '/flutter_flow/flutter_flow_checkbox_group.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/flutter_flow/form_field_controller.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import 'home_page_model.dart';
-export 'home_page_model.dart';
+import 'm_y_expenses_model.dart';
+export 'm_y_expenses_model.dart';
 
-class HomePageWidget extends StatefulWidget {
-  const HomePageWidget({super.key});
+class MYExpensesWidget extends StatefulWidget {
+  const MYExpensesWidget({super.key});
 
   @override
-  State<HomePageWidget> createState() => _HomePageWidgetState();
+  State<MYExpensesWidget> createState() => _MYExpensesWidgetState();
 }
 
-class _HomePageWidgetState extends State<HomePageWidget> {
-  late HomePageModel _model;
+class _MYExpensesWidgetState extends State<MYExpensesWidget>
+    with TickerProviderStateMixin {
+  late MYExpensesModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
     super.initState();
-    _model = createModel(context, () => HomePageModel());
+    _model = createModel(context, () => MYExpensesModel());
 
-    _model.textController ??= TextEditingController();
-    _model.textFieldFocusNode ??= FocusNode();
+    animationsMap.addAll({
+      'containerOnPageLoadAnimation1': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          FadeEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 200.0.ms,
+            begin: 0.0,
+            end: 1.0,
+          ),
+          MoveEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 200.0.ms,
+            begin: Offset(0.0, 49.0),
+            end: Offset(0.0, 0.0),
+          ),
+          ScaleEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 200.0.ms,
+            begin: Offset(1.0, 1.0),
+            end: Offset(1.0, 1.0),
+          ),
+        ],
+      ),
+      'containerOnPageLoadAnimation2': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          FadeEffect(
+            curve: Curves.easeInOut,
+            delay: 50.0.ms,
+            duration: 200.0.ms,
+            begin: 0.0,
+            end: 1.0,
+          ),
+          MoveEffect(
+            curve: Curves.easeInOut,
+            delay: 50.0.ms,
+            duration: 200.0.ms,
+            begin: Offset(0.0, 51.0),
+            end: Offset(0.0, 0.0),
+          ),
+          ScaleEffect(
+            curve: Curves.easeInOut,
+            delay: 50.0.ms,
+            duration: 200.0.ms,
+            begin: Offset(1.0, 1.0),
+            end: Offset(1.0, 1.0),
+          ),
+        ],
+      ),
+      'listViewOnPageLoadAnimation': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          FadeEffect(
+            curve: Curves.easeInOut,
+            delay: 90.0.ms,
+            duration: 150.0.ms,
+            begin: 0.0,
+            end: 1.0,
+          ),
+          MoveEffect(
+            curve: Curves.easeInOut,
+            delay: 90.0.ms,
+            duration: 150.0.ms,
+            begin: Offset(0.0, 26.0),
+            end: Offset(0.0, 0.0),
+          ),
+          ScaleEffect(
+            curve: Curves.easeInOut,
+            delay: 90.0.ms,
+            duration: 150.0.ms,
+            begin: Offset(1.0, 1.0),
+            end: Offset(1.0, 1.0),
+          ),
+        ],
+      ),
+    });
+    setupAnimations(
+      animationsMap.values.where((anim) =>
+          anim.trigger == AnimationTrigger.onActionTrigger ||
+          !anim.applyInitialState),
+      this,
+    );
   }
 
   @override
@@ -44,598 +132,431 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<UsersRecord>>(
-      stream: queryUsersRecord(
-        queryBuilder: (usersRecord) => usersRecord.where(
-          'uid',
-          isEqualTo: currentUserReference?.id,
-        ),
-        singleRecord: true,
-      ),
-      builder: (context, snapshot) {
-        // Customize what your widget looks like when it's loading.
-        if (!snapshot.hasData) {
-          return Scaffold(
-            backgroundColor: FlutterFlowTheme.of(context).background,
-            body: Center(
-              child: SizedBox(
-                width: 40.0,
-                height: 40.0,
-                child: SpinKitPumpingHeart(
-                  color: FlutterFlowTheme.of(context).primary,
-                  size: 40.0,
-                ),
+    return Scaffold(
+      key: scaffoldKey,
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          context.pushNamed(
+            'createExpense',
+            extra: <String, dynamic>{
+              kTransitionInfoKey: TransitionInfo(
+                hasTransition: true,
+                transitionType: PageTransitionType.bottomToTop,
+                duration: Duration(milliseconds: 220),
               ),
-            ),
+            },
           );
-        }
-        List<UsersRecord> homePageUsersRecordList = snapshot.data!;
-        // Return an empty Container when the item does not exist.
-        if (snapshot.data!.isEmpty) {
-          return Container();
-        }
-        final homePageUsersRecord = homePageUsersRecordList.isNotEmpty
-            ? homePageUsersRecordList.first
-            : null;
-
-        return Scaffold(
-          key: scaffoldKey,
-          backgroundColor: FlutterFlowTheme.of(context).background,
-          body: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                width: MediaQuery.sizeOf(context).width * 1.0,
-                decoration: BoxDecoration(
-                  color: FlutterFlowTheme.of(context).darkBackground,
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Padding(
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(16.0, 40.0, 16.0, 0.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Card(
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            color: FlutterFlowTheme.of(context).primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40.0),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(2.0),
-                              child: Container(
-                                width: 50.0,
-                                height: 50.0,
-                                clipBehavior: Clip.antiAlias,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
+        },
+        backgroundColor: FlutterFlowTheme.of(context).tertiary,
+        elevation: 8.0,
+        child: Icon(
+          Icons.post_add_rounded,
+          color: FlutterFlowTheme.of(context).textColor,
+          size: 32.0,
+        ),
+      ),
+      appBar: AppBar(
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+        automaticallyImplyLeading: false,
+        title: Text(
+          FFLocalizations.of(context).getText(
+            'cd0zp71n' /* My Expenses */,
+          ),
+          style: FlutterFlowTheme.of(context).displaySmall.override(
+                fontFamily: 'Lexend',
+                letterSpacing: 0.0,
+              ),
+        ),
+        actions: [],
+        centerTitle: false,
+        elevation: 0.0,
+      ),
+      body: SafeArea(
+        top: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                scrollDirection: Axis.vertical,
+                children: [
+                  Padding(
+                    padding:
+                        EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 16.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: MediaQuery.sizeOf(context).width * 0.44,
+                          height: 140.0,
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 4.0,
+                                color: Color(0x3F14181B),
+                                offset: Offset(
+                                  0.0,
+                                  3.0,
                                 ),
-                                child: Image.asset(
-                                  'assets/images/pennywise.png',
-                                ),
-                              ),
-                            ),
+                              )
+                            ],
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                12.0, 0.0, 0.0, 0.0),
+                          child: Padding(
+                            padding: EdgeInsets.all(12.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Text(
-                                      FFLocalizations.of(context).getText(
-                                        'ucqlrrlk' /* Welcome, */,
-                                      ),
-                                      style: FlutterFlowTheme.of(context)
-                                          .headlineSmall
-                                          .override(
-                                            fontFamily: 'Lexend',
-                                            letterSpacing: 0.0,
-                                          ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
-                                          4.0, 0.0, 0.0, 0.0),
-                                      child: Text(
-                                        valueOrDefault<String>(
-                                          homePageUsersRecord?.displayName,
-                                          'A',
-                                        ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .headlineSmall
-                                            .override(
-                                              fontFamily: 'Lexend',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              letterSpacing: 0.0,
-                                            ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                                 Text(
                                   FFLocalizations.of(context).getText(
-                                    'c10wb3ot' /* Your account Details are below... */,
+                                    'hfwbiivj' /* Max to Spend (50% of income) */,
                                   ),
+                                  textAlign: TextAlign.start,
                                   style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
+                                      .bodySmall
                                       .override(
                                         fontFamily: 'Lexend',
                                         letterSpacing: 0.0,
                                       ),
                                 ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 8.0, 0.0, 12.0),
+                                  child: AuthUserStreamWidget(
+                                    builder: (context) => Text(
+                                      formatNumber(
+                                        0.5 *
+                                            valueOrDefault(
+                                                currentUserDocument
+                                                    ?.monthlyIncomeAmount,
+                                                0.0),
+                                        formatType: FormatType.custom,
+                                        currency: '',
+                                        format: '',
+                                        locale: '',
+                                      ),
+                                      textAlign: TextAlign.start,
+                                      style: FlutterFlowTheme.of(context)
+                                          .displaySmall
+                                          .override(
+                                            fontFamily: 'Lexend',
+                                            color: FlutterFlowTheme.of(context)
+                                                .tertiary,
+                                            fontSize: 32.0,
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(20.0, 12.0, 20.0, 0.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(
-                            FFLocalizations.of(context).getText(
-                              '6z1sm34j' /* Your Monthly Income */,
-                            ),
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Lexend',
-                                  letterSpacing: 0.0,
+                        ).animateOnPageLoad(
+                            animationsMap['containerOnPageLoadAnimation1']!),
+                        Container(
+                          width: MediaQuery.sizeOf(context).width * 0.44,
+                          height: 140.0,
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 4.0,
+                                color: Color(0x3F14181B),
+                                offset: Offset(
+                                  0.0,
+                                  3.0,
                                 ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(
-                          20.0, 12.0, 20.0, 16.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(
-                            formatNumber(
-                              homePageUsersRecord!.monthlyIncomeAmount,
-                              formatType: FormatType.custom,
-                              currency: '',
-                              format: '',
-                              locale: '',
-                            ),
-                            style: FlutterFlowTheme.of(context)
-                                .displaySmall
-                                .override(
-                                  fontFamily: 'Lexend',
-                                  fontSize: 32.0,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 0.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: MediaQuery.sizeOf(context).width * 0.9,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).tertiary,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              FFLocalizations.of(context).getText(
-                                '30yef7fj' /* Expenses Budget */,
-                              ),
-                              style: FlutterFlowTheme.of(context)
-                                  .bodySmall
-                                  .override(
-                                    fontFamily: 'Lexend',
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
-                            Text(
-                              valueOrDefault<String>(
-                                formatNumber(
-                                  homePageUsersRecord!.monthlyIncomeAmount *
-                                      0.5,
-                                  formatType: FormatType.custom,
-                                  format: '\$',
-                                  locale: '',
-                                ),
-                                '5',
-                              ),
-                              style: FlutterFlowTheme.of(context)
-                                  .displaySmall
-                                  .override(
-                                    fontFamily: 'Lexend',
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 4.0, 0.0, 0.0),
-                              child: Text(
-                                FFLocalizations.of(context).getText(
-                                  '1cjqanzg' /* Guaranteed Savings Amt */,
-                                ),
-                                style: GoogleFonts.getFont(
-                                  'Lexend Deca',
-                                  color: Color(0xB4FFFFFF),
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 4.0, 0.0, 0.0),
-                              child: Text(
-                                formatNumber(
-                                  0.2 *
-                                      homePageUsersRecord!.monthlyIncomeAmount,
-                                  formatType: FormatType.custom,
-                                  currency: '',
-                                  format: '',
-                                  locale: '',
-                                ),
-                                style: FlutterFlowTheme.of(context)
-                                    .headlineSmall
-                                    .override(
-                                      fontFamily: 'Lexend',
-                                      letterSpacing: 0.0,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.sizeOf(context).width * 0.44,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).primary,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
-                child: Container(
-                  width: MediaQuery.sizeOf(context).width * 0.92,
-                  decoration: BoxDecoration(
-                    color: FlutterFlowTheme.of(context).darkBackground,
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 5.0,
-                        color: Color(0x66000000),
-                        offset: Offset(
-                          0.0,
-                          2.0,
-                        ),
-                      )
-                    ],
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(4.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              16.0, 8.0, 16.0, 0.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Text(
-                                FFLocalizations.of(context).getText(
-                                  'lmo3ko2i' /* Quick Services */,
-                                ),
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Lexend',
-                                      letterSpacing: 0.0,
-                                    ),
-                              ),
+                              )
                             ],
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              InkWell(
-                                splashColor: Colors.transparent,
-                                focusColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () async {
-                                  context.pushNamed('budget');
-                                },
-                                child: Container(
-                                  width:
-                                      MediaQuery.sizeOf(context).width * 0.24,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        FlutterFlowTheme.of(context).background,
-                                    borderRadius: BorderRadius.circular(8.0),
+                          child: Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  FFLocalizations.of(context).getText(
+                                    'wcsc04wg' /* Your Spending */,
                                   ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(12.0),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      focusColor: Colors.transparent,
-                                      hoverColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () async {
-                                        context.pushNamed('budget');
-                                      },
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    0.0, 0.0, 0.0, 12.0),
-                                            child: Icon(
-                                              Icons.account_balance_outlined,
+                                  textAlign: TextAlign.start,
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodySmall
+                                      .override(
+                                        fontFamily: 'Lexend',
+                                        letterSpacing: 0.0,
+                                      ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 8.0, 0.0, 12.0),
+                                  child: StreamBuilder<List<ExpenseListRecord>>(
+                                    stream: queryExpenseListRecord(
+                                      queryBuilder: (expenseListRecord) =>
+                                          expenseListRecord.where(
+                                        'expenseUser',
+                                        isEqualTo: currentUserReference,
+                                      ),
+                                      singleRecord: true,
+                                    ),
+                                    builder: (context, snapshot) {
+                                      // Customize what your widget looks like when it's loading.
+                                      if (!snapshot.hasData) {
+                                        return Center(
+                                          child: SizedBox(
+                                            width: 40.0,
+                                            height: 40.0,
+                                            child: SpinKitPumpingHeart(
                                               color:
                                                   FlutterFlowTheme.of(context)
-                                                      .textColor,
-                                              size: 36.0,
+                                                      .primary,
+                                              size: 40.0,
                                             ),
                                           ),
-                                          Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    0.0, 4.0, 0.0, 0.0),
-                                            child: Text(
-                                              FFLocalizations.of(context)
-                                                  .getText(
-                                                '774itrkn' /* Budgeting Advice */,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.getFont(
-                                                'Lexend Deca',
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .textColor,
-                                                fontSize: 12.0,
-                                              ),
+                                        );
+                                      }
+                                      List<ExpenseListRecord>
+                                          textExpenseListRecordList =
+                                          snapshot.data!;
+                                      // Return an empty Container when the item does not exist.
+                                      if (snapshot.data!.isEmpty) {
+                                        return Container();
+                                      }
+                                      final textExpenseListRecord =
+                                          textExpenseListRecordList.isNotEmpty
+                                              ? textExpenseListRecordList.first
+                                              : null;
+
+                                      return Text(
+                                        formatNumber(
+                                          textExpenseListRecord!.totalexpense,
+                                          formatType: FormatType.custom,
+                                          currency: '\$',
+                                          format: '',
+                                          locale: '',
+                                        ),
+                                        textAlign: TextAlign.start,
+                                        style: FlutterFlowTheme.of(context)
+                                            .displaySmall
+                                            .override(
+                                              fontFamily: 'Lexend',
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .errorRed,
+                                              fontSize: 32.0,
+                                              letterSpacing: 0.0,
                                             ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ).animateOnPageLoad(
+                            animationsMap['containerOnPageLoadAnimation2']!),
+                      ],
+                    ),
+                  ),
+                  StreamBuilder<List<ExpensesRecord>>(
+                    stream: queryExpensesRecord(
+                      queryBuilder: (expensesRecord) => expensesRecord.where(
+                        'userExpenses',
+                        isEqualTo: currentUserReference,
+                      ),
+                    ),
+                    builder: (context, snapshot) {
+                      // Customize what your widget looks like when it's loading.
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: SizedBox(
+                            width: 40.0,
+                            height: 40.0,
+                            child: SpinKitPumpingHeart(
+                              color: FlutterFlowTheme.of(context).primary,
+                              size: 40.0,
+                            ),
+                          ),
+                        );
+                      }
+                      List<ExpensesRecord> listViewExpensesRecordList =
+                          snapshot.data!;
+                      if (listViewExpensesRecordList.isEmpty) {
+                        return Center(
+                          child: Image.asset(
+                            'assets/images/Screenshot_2024-07-30_171951.jpg',
+                            width: MediaQuery.sizeOf(context).width * 0.8,
+                            height: 400.0,
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: listViewExpensesRecordList.length,
+                        itemBuilder: (context, listViewIndex) {
+                          final listViewExpensesRecord =
+                              listViewExpensesRecordList[listViewIndex];
+                          return Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                                16.0, 0.0, 16.0, 12.0),
+                            child: Container(
+                              width: 100.0,
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context).primary,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(12.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          0.0, 0.0, 0.0, 4.0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            listViewExpensesRecord.expenseName,
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodySmall
+                                                .override(
+                                                  fontFamily: 'Lexend',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .alternate,
+                                                  letterSpacing: 0.0,
+                                                ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              InkWell(
-                                splashColor: Colors.transparent,
-                                focusColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () async {
-                                  context.pushNamed('MY_Debts');
-                                },
-                                child: Container(
-                                  width:
-                                      MediaQuery.sizeOf(context).width * 0.24,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        FlutterFlowTheme.of(context).background,
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(12.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 12.0),
-                                          child: Icon(
-                                            Icons.money_off,
+                                    Text(
+                                      formatNumber(
+                                        listViewExpensesRecord
+                                            .expenseAmountNumber,
+                                        formatType: FormatType.decimal,
+                                        decimalType: DecimalType.automatic,
+                                        currency: '\$',
+                                      ),
+                                      style: FlutterFlowTheme.of(context)
+                                          .displaySmall
+                                          .override(
+                                            fontFamily: 'Lexend',
                                             color: FlutterFlowTheme.of(context)
                                                 .textColor,
-                                            size: 36.0,
+                                            letterSpacing: 0.0,
                                           ),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 4.0, 0.0, 0.0),
-                                          child: Text(
-                                            FFLocalizations.of(context).getText(
-                                              'xs2as0vf' /* Debt Overview */,
-                                            ),
-                                            style: GoogleFonts.getFont(
-                                              'Lexend Deca',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .textColor,
-                                              fontSize: 12.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
                                     ),
-                                  ),
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          0.0, 4.0, 0.0, 0.0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            valueOrDefault<String>(
+                                              dateTimeFormat(
+                                                'M/d H:mm',
+                                                listViewExpensesRecord
+                                                    .expenseDate,
+                                                locale:
+                                                    FFLocalizations.of(context)
+                                                        .languageCode,
+                                              ),
+                                              '1/2/2023',
+                                            ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodySmall
+                                                .override(
+                                                  fontFamily: 'Lexend',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .alternate,
+                                                  letterSpacing: 0.0,
+                                                ),
+                                          ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                        0.0, 0.0, 4.0, 0.0),
+                                                child: Text(
+                                                  FFLocalizations.of(context)
+                                                      .getText(
+                                                    'c81i1ybg' /* Type */,
+                                                  ),
+                                                  textAlign: TextAlign.end,
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodySmall
+                                                      .override(
+                                                        fontFamily: 'Lexend',
+                                                        color:
+                                                            Color(0xB3FFFFFF),
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                      ),
+                                                ),
+                                              ),
+                                              Text(
+                                                listViewExpensesRecord
+                                                    .expenseType,
+                                                textAlign: TextAlign.end,
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .headlineSmall
+                                                        .override(
+                                                          fontFamily: 'Lexend',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .textColor,
+                                                          letterSpacing: 0.0,
+                                                        ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              InkWell(
-                                splashColor: Colors.transparent,
-                                focusColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () async {
-                                  context.pushNamed('MY_Expenses');
-                                },
-                                child: Container(
-                                  width:
-                                      MediaQuery.sizeOf(context).width * 0.24,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        FlutterFlowTheme.of(context).background,
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(12.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 12.0),
-                                          child: Icon(
-                                            Icons.stacked_line_chart_rounded,
-                                            color: FlutterFlowTheme.of(context)
-                                                .textColor,
-                                            size: 36.0,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 4.0, 0.0, 0.0),
-                                          child: Text(
-                                            FFLocalizations.of(context).getText(
-                                              'g8yaaa7f' /* Expenses Tracker */,
-                                            ),
-                                            style: GoogleFonts.getFont(
-                                              'Lexend Deca',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .textColor,
-                                              fontSize: 12.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                            ),
+                          );
+                        },
+                      ).animateOnPageLoad(
+                          animationsMap['listViewOnPageLoadAnimation']!);
+                    },
                   ),
-                ),
+                ],
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: FlutterFlowTheme.of(context).primaryBackground,
-                ),
-              ),
-              Align(
-                alignment: AlignmentDirectional(0.0, -1.0),
-                child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 40.0, 0.0, 0.0),
-                  child: Text(
-                    FFLocalizations.of(context).getText(
-                      'i8bzpjbs' /* Daily Financial Goals */,
-                    ),
-                    style: FlutterFlowTheme.of(context).titleSmall.override(
-                          fontFamily: 'Lexend',
-                          color: FlutterFlowTheme.of(context).tertiary,
-                          letterSpacing: 0.0,
-                        ),
-                  ),
-                ),
-              ),
-              Flexible(
-                child: Align(
-                  alignment: AlignmentDirectional(-1.0, -1.0),
-                  child: Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 5.0, 3.0),
-                    child: FlutterFlowCheckboxGroup(
-                      options: [
-                        FFLocalizations.of(context).getText(
-                          'waegkbcb' /* Daily Financial Reflection: No... */,
-                        ),
-                        FFLocalizations.of(context).getText(
-                          'rz7u826g' /* Each day, find and use a new w... */,
-                        ),
-                        FFLocalizations.of(context).getText(
-                          'mz3g6lp8' /* Log your expenses, write if it... */,
-                        )
-                      ],
-                      onChanged: (val) =>
-                          setState(() => _model.checkboxGroupValues = val),
-                      controller: _model.checkboxGroupValueController ??=
-                          FormFieldController<List<String>>(
-                        [],
-                      ),
-                      activeColor: FlutterFlowTheme.of(context).primary,
-                      checkColor: FlutterFlowTheme.of(context).info,
-                      checkboxBorderColor:
-                          FlutterFlowTheme.of(context).secondaryText,
-                      textStyle:
-                          FlutterFlowTheme.of(context).bodyMedium.override(
-                                fontFamily: 'Lexend',
-                                letterSpacing: 0.0,
-                              ),
-                      unselectedTextStyle:
-                          FlutterFlowTheme.of(context).bodyMedium.override(
-                                fontFamily: 'Lexend',
-                                letterSpacing: 0.0,
-                              ),
-                      itemPadding:
-                          EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 9.0, 0.0),
-                      checkboxBorderRadius: BorderRadius.circular(4.0),
-                      initialized: _model.checkboxGroupValues != null,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
