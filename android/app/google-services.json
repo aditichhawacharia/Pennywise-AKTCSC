@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "851967546693",
+    "project_id": "a-k-t-c-s-c-hackathon-s-30pzj9",
+    "storage_bucket": "a-k-t-c-s-c-hackathon-s-30pzj9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:851967546693:android:f2f6d9ef62f7927c549a2c",
+        "android_client_info": {
+          "package_name": "com.flutterflow.finwallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKAVO2WwgbmJI-9msJ_N8EQrY3fG6ffkA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
